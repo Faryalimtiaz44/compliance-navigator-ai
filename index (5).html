@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="Compliance Navigator AI — a demonstration workspace for requirements, evidence, risks and actions.">
+  <title>Compliance Navigator AI — Compliance, made actionable</title>
+  <style>
+    :root {
+      --navy:#0b1220; --slate:#111c2e; --panel:#142238; --panel2:#172840;
+      --blue:#3b82f6; --cyan:#22d3ee; --white:#f8fafc; --muted:#94a3b8;
+      --line:rgba(148,163,184,.17); --green:#34d399; --amber:#fbbf24; --red:#fb7185;
+      --shadow:0 18px 50px rgba(0,0,0,.25); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:86px}
+    body{margin:0;background:var(--navy);color:var(--white);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:inherit;text-decoration:none} button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .container{width:min(1160px,calc(100% - 40px));margin:auto}
+    .muted{color:var(--muted)} .eyebrow{color:var(--cyan);font-size:.76rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+    .section{padding:88px 0}.section-head{max-width:690px;margin-bottom:34px}
+    h1,h2,h3,p{margin-top:0} h1{font-size:clamp(2.8rem,6vw,5.3rem);line-height:1.02;letter-spacing:-.055em;margin:18px 0 22px}
+    h2{font-size:clamp(2rem,4vw,3.15rem);line-height:1.1;letter-spacing:-.04em;margin:12px 0}
+    h3{font-size:1.08rem;line-height:1.3;margin-bottom:9px}
+    .gradient-text{background:linear-gradient(100deg,#fff 15%,#8ddff2 58%,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .btn{border:1px solid transparent;border-radius:11px;padding:11px 17px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:9px;transition:.2s ease}
+    .btn:hover{transform:translateY(-2px)} .btn-primary{background:var(--blue);color:white;box-shadow:0 8px 24px #3b82f633}
+    .btn-primary:hover{background:#5593ff}.btn-ghost{border-color:var(--line);background:#ffffff08;color:var(--white)}
+    .btn-small{padding:8px 12px;font-size:.84rem}.icon{width:38px;height:38px;border:1px solid #3b82f633;border-radius:12px;background:#3b82f61a;color:#7dd3fc;display:grid;place-items:center;font-size:1.1rem;flex:none}
+    .topbar{position:sticky;top:0;z-index:20;background:#0b1220df;backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+    .nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:-.02em}
+    .brand-mark{width:36px;height:36px;border-radius:11px;background:linear-gradient(145deg,var(--blue),var(--cyan));display:grid;place-items:center;color:#061322;font-weight:950}
+    .nav-links{display:flex;align-items:center;gap:23px;color:#c1ccda;font-size:.9rem}
+    .nav-links a:hover{color:white}.nav-actions{display:flex;gap:10px;align-items:center}.menu-toggle{display:none}
+    .hero{padding:82px 0 72px;overflow:hidden;position:relative}
+    .hero:before{content:"";position:absolute;width:580px;height:580px;right:-120px;top:-160px;background:radial-gradient(circle,#2563eb2b,transparent 67%);pointer-events:none}
+    .hero-grid{display:grid;grid-template-columns:1fr 1.03fr;gap:48px;align-items:center;position:relative}
+    .hero-copy p{font-size:1.12rem;color:#b6c3d4;max-width:560px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0}
+    .trust-line{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.83rem}.pulse{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px #34d39920}
+    .preview-shell{border:1px solid #ffffff20;border-radius:22px;background:linear-gradient(145deg,#1b2c45,#101b2d);padding:14px;box-shadow:var(--shadow);transform:perspective(1200px) rotateY(-5deg) rotateX(2deg)}
+    .preview-top{display:flex;justify-content:space-between;align-items:center;padding:6px 5px 14px;color:#cbd5e1;font-size:.76rem}
+    .window-dots{display:flex;gap:5px}.window-dots i{width:7px;height:7px;border-radius:50%;background:#64748b}
+    .preview-content{background:#0d1727;border:1px solid var(--line);border-radius:13px;padding:17px}
+    .preview-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:.84rem;font-weight:750}
+    .demo-tag{font-size:.64rem;color:#7dd3fc;background:#0e749033;border:1px solid #22d3ee44;padding:4px 7px;border-radius:99px}
+    .mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+    .mini-stat{padding:12px;background:#16263c;border:1px solid var(--line);border-radius:10px}
+    .mini-stat strong{display:block;font-size:1.3rem}.mini-stat small{font-size:.68rem;color:var(--muted)}
+    .preview-lower{display:grid;grid-template-columns:1.15fr .85fr;gap:10px;margin-top:10px}
+    .mini-panel{padding:13px;background:#16263c;border:1px solid var(--line);border-radius:10px;min-height:130px}
+    .bar{height:7px;border-radius:20px;background:#26384f;overflow:hidden;margin:12px 0}.bar span{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+    .mini-row{display:flex;justify-content:space-between;font-size:.7rem;color:#cbd5e1;margin:9px 0}
+    .risk-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;background:var(--amber)}
+    .problem-grid,.feature-grid,.steps-grid,.docs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{background:linear-gradient(145deg,#142238,#101b2c);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 8px 24px #00000012}
+    .card p{color:var(--muted);font-size:.92rem;margin-bottom:0}.problem-card{min-height:180px}
+    .solution-band{margin-top:22px;padding:26px;border-radius:18px;border:1px solid #22d3ee35;background:linear-gradient(100deg,#12304a,#13243a);display:flex;align-items:center;gap:20px}
+    .solution-band .icon{background:#22d3ee20;color:var(--cyan);width:48px;height:48px}
+    .feature-grid{grid-template-columns:repeat(4,1fr)}.feature-card{min-height:205px;transition:.22s}.feature-card:hover{transform:translateY(-4px);border-color:#3b82f666}
+    .feature-card .icon{margin-bottom:17px}
+    .dashboard-section{background:#0e1929;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .demo-note{display:flex;gap:10px;align-items:flex-start;padding:13px 15px;border-radius:12px;background:#fbbf2410;border:1px solid #fbbf2438;color:#f6d58a;font-size:.84rem;margin:20px 0}
+    .app{display:grid;grid-template-columns:220px 1fr;min-height:670px;border:1px solid #ffffff20;border-radius:20px;overflow:hidden;background:#0b1524;box-shadow:var(--shadow)}
+    .sidebar{padding:22px 14px;background:#101d30;border-right:1px solid var(--line)}
+    .side-label{font-size:.66rem;color:#71839a;text-transform:uppercase;letter-spacing:.13em;padding:15px 10px 8px;font-weight:800}
+    .side-link{width:100%;border:0;background:transparent;color:#aab8c9;text-align:left;padding:10px;border-radius:9px;display:flex;gap:10px;align-items:center;font-size:.85rem;margin:2px 0}
+    .side-link:hover,.side-link.active{background:#3b82f622;color:white}.side-link.active{box-shadow:inset 2px 0 var(--cyan)}
+    .app-main{padding:25px;min-width:0}.app-header{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:20px}
+    .app-header h3{font-size:1.25rem;margin:0}.app-header p{font-size:.77rem;color:var(--muted);margin:3px 0 0}
+    .app-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .stat-card{background:#14243a;border:1px solid var(--line);border-radius:13px;padding:15px}
+    .stat-card small{color:var(--muted);font-size:.73rem}.stat-value{font-size:1.8rem;font-weight:850;letter-spacing:-.04em;margin:4px 0}.stat-foot{font-size:.68rem;color:var(--green)}
+    .dash-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:13px;margin-top:13px}
+    .panel{background:#122137;border:1px solid var(--line);border-radius:14px;padding:17px;min-width:0}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.panel-head h4{margin:0;font-size:.9rem}
+    .progress-line{display:flex;justify-content:space-between;font-size:.76rem;color:#cbd5e1;margin:13px 0 5px}
+    .progress-track{height:8px;background:#26384f;border-radius:20px;overflow:hidden}.progress-track span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:20px}
+    .chart-bars{height:125px;display:flex;align-items:end;gap:12px;padding:10px 8px 0;border-bottom:1px solid var(--line)}
+    .chart-bars span{flex:1;min-width:9px;border-radius:5px 5px 0 0;background:linear-gradient(180deg,#22d3ee,#3b82f6);opacity:.85}
+    .chart-labels{display:flex;justify-content:space-around;color:#8293a8;font-size:.65rem;margin-top:7px}
+    .activity{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);font-size:.76rem;color:#cbd5e1}.activity:last-child{border:0}
+    .activity b{display:block;color:white;font-size:.77rem}.activity small{color:var(--muted)}
+    .tab-content{display:none}.tab-content.active{display:block}
+    .toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:13px}.field{background:#0c1727;border:1px solid #ffffff25;color:white;border-radius:9px;padding:10px 11px;min-width:0;outline:none}
+    .field:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #22d3ee18}.toolbar .field{flex:1;min-width:170px}
+    select.field option{background:#102039}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+    table{width:100%;border-collapse:collapse;min-width:650px;font-size:.78rem}th,td{text-align:left;padding:12px 13px;border-bottom:1px solid var(--line);white-space:nowrap}
+    th{font-size:.68rem;color:#8ea0b6;text-transform:uppercase;letter-spacing:.08em;background:#ffffff05}tr:last-child td{border:0}
+    .status,.priority{display:inline-flex;align-items:center;padding:4px 8px;border-radius:99px;font-size:.66rem;font-weight:800}
+    .status.complete{background:#34d39918;color:#6ee7b7}.status.review{background:#fbbf2418;color:#fcd34d}.status.progress{background:#3b82f620;color:#93c5fd}.status.blocked{background:#fb718518;color:#fda4af}
+    .priority.high{color:#fda4af;background:#fb718518}.priority.medium{color:#fcd34d;background:#fbbf2418}.priority.low{color:#86efac;background:#34d39918}
+    .table-select{background:#0b1728;border:1px solid var(--line);color:#dbeafe;padding:5px 7px;border-radius:7px;font-size:.72rem}
+    .empty{padding:30px;text-align:center;color:var(--muted)}
+    .how-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;counter-reset:step}
+    .step{position:relative;padding:19px 15px;background:#142238;border:1px solid var(--line);border-radius:15px;min-height:180px}
+    .step-num{font-size:.72rem;color:var(--cyan);font-weight:900;letter-spacing:.1em}.step .icon{margin:13px 0}
+    .roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.phase{position:relative;overflow:hidden}
+    .phase:before{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:var(--blue)}
+    .phase:nth-child(2):before{background:var(--cyan)}.phase:nth-child(3):before{background:#64748b}
+    .phase ul{padding-left:18px;color:#b8c6d7;font-size:.87rem}.phase li{margin:8px 0}
+    .phase-label{font-size:.7rem;color:var(--cyan);font-weight:850;letter-spacing:.12em;text-transform:uppercase}
+    .responsible{display:grid;grid-template-columns:1fr 1fr;gap:16px}.responsible .card{background:#121f32}
+    .docs-grid{grid-template-columns:repeat(3,1fr)}
+    .footer{padding:35px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.8rem}
+    .footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .modal-backdrop{position:fixed;inset:0;background:#020617c9;display:none;place-items:center;padding:18px;z-index:50}
+    .modal-backdrop.open{display:grid}.modal{width:min(480px,100%);background:#142238;border:1px solid #ffffff25;border-radius:18px;padding:23px;box-shadow:var(--shadow)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.modal-head h3{margin:0}
+    .close{background:transparent;border:0;color:#cbd5e1;font-size:1.4rem}.form-grid{display:grid;gap:12px}.form-grid label{display:grid;gap:5px;color:#b9c7d8;font-size:.78rem}
+    .form-grid .field{width:100%}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
+    .toast{position:fixed;bottom:22px;right:22px;background:#17314a;border:1px solid #22d3ee55;color:#e0f2fe;padding:12px 16px;border-radius:11px;box-shadow:var(--shadow);z-index:80;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .mobile-only{display:none}
+    @media(max-width:980px){.nav-links{gap:13px}.hero-grid{grid-template-columns:1fr 1fr;gap:25px}.feature-grid{grid-template-columns:repeat(2,1fr)}.how-grid{grid-template-columns:repeat(3,1fr)}.stat-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:760px){
+      .container{width:min(100% - 28px,600px)}.section{padding:65px 0}.nav{height:68px}.menu-toggle{display:inline-flex}
+      .nav-links{display:none;position:absolute;top:68px;left:0;right:0;padding:18px 22px;background:#101d30;border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch}
+      .nav-links.open{display:flex}.nav-actions .btn-ghost{display:none}.hero{padding:60px 0}.hero-grid{grid-template-columns:1fr}.preview-shell{transform:none}
+      .problem-grid,.roadmap,.responsible,.docs-grid{grid-template-columns:1fr}.solution-band{align-items:flex-start}
+      .app{grid-template-columns:1fr}.sidebar{display:flex;overflow-x:auto;gap:5px;padding:9px;border-right:0;border-bottom:1px solid var(--line)}
+      .side-label{display:none}.side-link{white-space:nowrap;width:auto;flex:none;padding:9px}.app-main{padding:15px}
+      .dash-grid{grid-template-columns:1fr}.app-header{align-items:flex-start;flex-direction:column}.how-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:460px){h1{font-size:2.65rem}.feature-grid,.how-grid{grid-template-columns:1fr}.stat-grid{grid-template-columns:1fr 1fr}.stat-card{padding:11px}.stat-value{font-size:1.5rem}.mini-stats{grid-template-columns:1fr 1fr 1fr}.preview-lower{grid-template-columns:1fr}.nav-actions .btn-primary{padding:9px 10px;font-size:.78rem}}
+    @media print{
+      body{background:white;color:#111}.topbar,.hero,.section:not(#dashboard),.footer,.sidebar,.app-actions,.demo-note,.toolbar,.btn{display:none!important}
+      #dashboard{display:block!important;padding:0!important;background:white!important}.container{width:100%}.app{display:block;border:0;box-shadow:none;background:white}
+      .app-main{padding:0}.panel,.stat-card{background:white;color:#111;border:1px solid #ccc;break-inside:avoid}.muted,.stat-card small,.app-header p{color:#555!important}
+      table{color:#111}th,td{border-color:#ddd}.status,.priority{border:1px solid #aaa}
+    }
+  
+    /* High-clarity contrast pass: brighter data, stronger surfaces and clearer controls */
+    :root {
+      --muted:#c0ccda;
+      --line:rgba(190,210,232,.25);
+      --panel:#1a2b43;
+      --panel2:#203650;
+    }
+    body { color:#f8fbff; }
+    .muted, .hero-copy p, .card p, .step p, .phase ul,
+    .app-header p, .stat-card small { color:#c0ccda; }
+    .card, .panel, .stat-card, .mini-panel, .mini-stat, .step {
+      background:#182b43;
+      border-color:rgba(190,210,232,.25);
+    }
+    .problem-card, .feature-card { box-shadow:0 10px 28px rgba(0,0,0,.22); }
+    .sidebar { background:#14253b; }
+    .side-link { color:#d0dbea; }
+    .side-link:hover, .side-link.active { color:#ffffff; background:#2563eb44; }
+    .side-label { color:#a9bad0; }
+    th { color:#c1d0e2; background:#203650; }
+    td { color:#f1f6fc; }
+    .table-wrap { border-color:rgba(190,210,232,.3); }
+    .field, .table-select {
+      background:#091729;
+      color:#ffffff;
+      border-color:rgba(190,210,232,.38);
+    }
+    .field::placeholder { color:#a9bad0; opacity:1; }
+    select.field option { color:#ffffff; background:#102039; }
+    .chart-labels { color:#b8c8da; }
+    .mini-row { color:#e0eaf5; }
+    .mini-stat small, .mini-panel small { color:#c0ccda; }
+    .status.complete { background:#064e3b; color:#a7f3d0; }
+    .status.review { background:#713f12; color:#fde68a; }
+    .status.progress { background:#1e40af; color:#dbeafe; }
+    .status.blocked { background:#881337; color:#ffe4e6; }
+    .priority.high { background:#881337; color:#ffe4e6; }
+    .priority.medium { background:#713f12; color:#fde68a; }
+    .priority.low { background:#14532d; color:#dcfce7; }
+    .demo-tag { color:#a5f3fc; background:#164e63; border-color:#22d3ee88; }
+    .demo-note { color:#fff0bd; background:#533b12; border-color:#fbbf2477; }
+    button:focus-visible, a:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible {
+      outline:3px solid #67e8f9;
+      outline-offset:3px;
+    }
+
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="container nav">
+    <a class="brand" href="#home" aria-label="Compliance Navigator AI home"><span class="brand-mark">C</span><span>Compliance <span class="muted">Navigator</span> AI</span></a>
+    <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+      <a href="#home">Overview</a><a href="#features">Features</a><a href="#dashboard">Dashboard</a><a href="#how">How It Works</a><a href="#roadmap">Roadmap</a><a href="#documentation">Documentation</a>
+    </nav>
+    <div class="nav-actions"><a class="btn btn-ghost btn-small" href="#documentation">Project brief</a><a class="btn btn-primary btn-small" href="#dashboard">Explore Demo <span aria-hidden="true">↗</span></a><button class="btn btn-ghost btn-small menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button></div>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="home">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">A clearer path through compliance</div>
+      <h1>Compliance Shouldn't <span class="gradient-text">Slow Innovation.</span></h1>
+      <p>Bring requirements, evidence, risks, and responsibilities together in one intelligent workspace. Turn fragmented compliance work into clear, trackable action.</p>
+      <div class="hero-actions"><a class="btn btn-primary" href="#dashboard">Explore Live Demo <span>→</span></a><a class="btn btn-ghost" href="#features">Discover Features</a></div>
+      <div class="trust-line"><span class="pulse"></span> Interactive prototype · Sample data · No external services</div>
+    </div>
+    <div class="preview-shell" aria-label="Illustrative dashboard preview">
+      <div class="preview-top"><div class="window-dots"><i></i><i></i><i></i></div><span>COMPLIANCE WORKSPACE</span><span>● Demo</span></div>
+      <div class="preview-content">
+        <div class="preview-title"><span>Workspace overview</span><span class="demo-tag">DEMO DATA</span></div>
+        <div class="mini-stats"><div class="mini-stat"><strong>128</strong><small>Requirements</small></div><div class="mini-stat"><strong>84</strong><small>Mapped</small></div><div class="mini-stat"><strong style="color:#fbbf24">12</strong><small>Needs review</small></div></div>
+        <div class="preview-lower">
+          <div class="mini-panel"><small class="muted">Overall mapped progress</small><div style="font-size:1.7rem;font-weight:850">66% <small style="font-size:.65rem;color:#34d399">illustrative</small></div><div class="bar"><span style="width:66%"></span></div><div class="mini-row"><span>Mapped</span><b>84 / 128</b></div><div class="mini-row"><span>Open actions</span><b>09</b></div></div>
+          <div class="mini-panel"><small class="muted">Priority watchlist</small><div class="mini-row"><span><i class="risk-dot"></i>Supplier evidence</span><b>High</b></div><div class="mini-row"><span><i class="risk-dot" style="background:#fb7185"></i>Access review</span><b>High</b></div><div class="mini-row"><span><i class="risk-dot" style="background:#34d399"></i>Policy update</span><b>Low</b></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="problem">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">The challenge</div><h2>Compliance work is connected.<br><span class="gradient-text">The information often isn't.</span></h2><p class="muted">When requirements, proof, ownership and risk live in separate places, teams lose time reconstructing the picture instead of moving work forward.</p></div>
+    <div class="problem-grid">
+      <article class="card problem-card"><div class="icon">▤</div><h3>Fragmented requirements</h3><p>Obligations are spread across documents, spreadsheets and disconnected team workflows.</p></article>
+      <article class="card problem-card"><div class="icon">⌕</div><h3>Scattered evidence</h3><p>Supporting documents are difficult to locate, connect to requirements and verify consistently.</p></article>
+      <article class="card problem-card"><div class="icon">◎</div><h3>Unclear ownership</h3><p>Tasks can lack a clear owner, due date or visible next step.</p></article>
+      <article class="card problem-card"><div class="icon">△</div><h3>Limited risk visibility</h3><p>Potential issues can be hard to compare, prioritize and follow through.</p></article>
+      <article class="card problem-card"><div class="icon">◷</div><h3>Hard-to-track progress</h3><p>Teams spend time chasing updates instead of seeing what is complete or overdue.</p></article>
+      <article class="card problem-card"><div class="icon">▧</div><h3>Manual reporting</h3><p>Creating a consistent status summary can mean assembling information by hand.</p></article>
+    </div>
+    <div class="solution-band"><div class="icon">✦</div><div><h3 style="margin-bottom:5px">One workspace. A more actionable view.</h3><p class="muted" style="margin:0">Compliance Navigator AI brings the moving parts into a connected demonstration workflow: organize requirements, link evidence, monitor risks, assign actions and report progress.</p></div></div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">What the workspace brings together</div><h2>Clarity across the <span class="gradient-text">compliance lifecycle.</span></h2><p class="muted">A practical set of capabilities designed to help teams understand what exists, what needs attention and who is moving it forward.</p></div>
+    <div class="feature-grid">
+      <article class="card feature-card"><div class="icon">▤</div><h3>Regulatory Requirements</h3><p>Maintain a structured register of obligations, categories, owners and review states.</p></article>
+      <article class="card feature-card"><div class="icon">◔</div><h3>Progress Tracking</h3><p>See mapped coverage and review status through clear metrics and visual summaries.</p></article>
+      <article class="card feature-card"><div class="icon">△</div><h3>Risk Register</h3><p>Record risk severity, ownership, mitigation notes and current status in one place.</p></article>
+      <article class="card feature-card"><div class="icon">⌕</div><h3>Evidence Management</h3><p>Connect evidence records to requirements and track verification state.</p></article>
+      <article class="card feature-card"><div class="icon">✓</div><h3>Action Tracking</h3><p>Assign owners, set due dates, prioritize work and update task progress.</p></article>
+      <article class="card feature-card"><div class="icon">▧</div><h3>Structured Reports</h3><p>Export a concise CSV snapshot or print a clean, meeting-ready report.</p></article>
+      <article class="card feature-card"><div class="icon">▦</div><h3>Overview Dashboard</h3><p>Bring requirements, reviews, risks and action status into a shared overview.</p></article>
+      <article class="card feature-card"><div class="icon">✧</div><h3>AI-Assisted Insights <span class="demo-tag">PROPOSED</span></h3><p>Future capability for summarization and prioritization, subject to human review.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section dashboard-section" id="dashboard">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">Explore the product</div><h2>A working view of <span class="gradient-text">compliance operations.</span></h2><p class="muted">Use the navigation, search, filters, forms and report actions below. Changes are held in this browser session only.</p></div>
+    <div class="demo-note"><strong>DEMO ENVIRONMENT</strong><span>All names, metrics and records are fictional sample data for the hackathon prototype. No real compliance assessment is being performed.</span></div>
+    <div class="app">
+      <aside class="sidebar" aria-label="Dashboard sections">
+        <div class="side-label">Workspace</div>
+        <button class="side-link active" data-tab="overview">▦ <span>Overview</span></button>
+        <button class="side-link" data-tab="requirements">▤ <span>Requirements</span></button>
+        <button class="side-link" data-tab="risks">△ <span>Risk register</span></button>
+        <button class="side-link" data-tab="evidence">⌕ <span>Evidence</span></button>
+        <button class="side-link" data-tab="actions">✓ <span>Action tracker</span></button>
+        <div class="side-label">Insights</div>
+        <button class="side-link" data-tab="reports">▧ <span>Reports</span></button>
+      </aside>
+      <div class="app-main">
+        <div class="app-header"><div><h3 id="viewTitle">Workspace overview</h3><p id="viewSubtitle">A snapshot of your sample compliance workspace</p></div><div class="app-actions"><button class="btn btn-ghost btn-small" id="printBtn">Print report</button><button class="btn btn-primary btn-small" id="addActionTop">＋ Add action</button></div></div>
+
+        <section class="tab-content active" id="tab-overview">
+          <div class="stat-grid">
+            <div class="stat-card"><small>Total requirements</small><div class="stat-value" id="totalReq">12</div><div class="stat-foot">Sample register</div></div>
+            <div class="stat-card"><small>Mapped requirements</small><div class="stat-value" id="mappedReq">8</div><div class="stat-foot">67% mapped</div></div>
+            <div class="stat-card"><small>Items for review</small><div class="stat-value" id="reviewReq">3</div><div class="stat-foot" style="color:var(--amber)">Needs attention</div></div>
+            <div class="stat-card"><small>High-priority risks</small><div class="stat-value" id="highRisks">2</div><div class="stat-foot" style="color:var(--red)">Priority watchlist</div></div>
+          </div>
+          <div class="dash-grid">
+            <div class="panel"><div class="panel-head"><h4>Requirement mapping progress</h4><span class="demo-tag">SAMPLE</span></div><div class="progress-line"><span>Mapped coverage</span><b id="coverageLabel">67%</b></div><div class="progress-track"><span id="coverageBar" style="width:67%"></span></div><div class="progress-line"><span>Evidence linked</span><b>58%</b></div><div class="progress-track"><span style="width:58%"></span></div><div class="progress-line"><span>Actions completed</span><b id="actionProgress">40%</b></div><div class="progress-track"><span id="actionBar" style="width:40%"></span></div><div class="chart-bars" aria-label="Illustrative weekly activity chart"><span style="height:35%"></span><span style="height:52%"></span><span style="height:43%"></span><span style="height:72%"></span><span style="height:61%"></span><span style="height:88%"></span><span style="height:76%"></span></div><div class="chart-labels"><span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span><span>W6</span><span>W7</span></div></div>
+            <div class="panel"><div class="panel-head"><h4>Recent workspace activity</h4><span class="demo-tag">ILLUSTRATIVE</span></div><div class="activity"><span class="icon">✓</span><div><b>Evidence record updated</b><small>Access control review · 2 hours ago</small></div></div><div class="activity"><span class="icon">△</span><div><b>Risk mitigation reviewed</b><small>Supplier assurance · Yesterday</small></div></div><div class="activity"><span class="icon">＋</span><div><b>New action assigned</b><small>Policy review · 2 days ago</small></div></div><div class="activity"><span class="icon">▤</span><div><b>Requirement status changed</b><small>Data handling · 3 days ago</small></div></div></div>
+          </div>
+        </section>
+
+        <section class="tab-content" id="tab-requirements">
+          <div class="toolbar"><input class="field" id="reqSearch" type="search" placeholder="Search requirements…" aria-label="Search requirements"><select class="field" id="reqFilter" aria-label="Filter requirements by status"><option value="all">All statuses</option><option>Mapped</option><option>In review</option><option>Not started</option><option>Needs evidence</option></select><select class="field" id="categoryFilter" aria-label="Filter by category"><option value="all">All categories</option><option>Governance</option><option>Security</option><option>Privacy</option><option>Supplier</option></select></div>
+          <div class="table-wrap"><table><thead><tr><th>Requirement</th><th>Category</th><th>Owner</th><th>Priority</th><th>Status</th></tr></thead><tbody id="requirementsBody"></tbody></table></div>
+        </section>
+
+        <section class="tab-content" id="tab-risks">
+          <div class="toolbar"><span class="muted" style="align-self:center;font-size:.8rem">Track potential issues and mitigation ownership.</span><button class="btn btn-primary btn-small" id="addRiskBtn">＋ Add risk</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Risk</th><th>Category</th><th>Severity</th><th>Owner</th><th>Status</th><th>Mitigation</th></tr></thead><tbody id="risksBody"></tbody></table></div>
+        </section>
+
+        <section class="tab-content" id="tab-evidence">
+          <div class="toolbar"><input class="field" id="evidenceSearch" type="search" placeholder="Search evidence…" aria-label="Search evidence"><span class="muted" style="align-self:center;font-size:.78rem">Prototype records only — no files are uploaded.</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Evidence item</th><th>Related requirement</th><th>Last updated</th><th>Verification</th></tr></thead><tbody id="evidenceBody"></tbody></table></div>
+        </section>
+
+        <section class="tab-content" id="tab-actions">
+          <div class="toolbar"><input class="field" id="actionSearch" type="search" placeholder="Search actions…" aria-label="Search actions"><select class="field" id="actionFilter" aria-label="Filter actions"><option value="all">All statuses</option><option>Open</option><option>In progress</option><option>Complete</option></select><button class="btn btn-primary btn-small" id="addActionBtn">＋ Add task</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Action</th><th>Owner</th><th>Due date</th><th>Priority</th><th>Status (editable)</th></tr></thead><tbody id="actionsBody"></tbody></table></div>
+        </section>
+
+        <section class="tab-content" id="tab-reports">
+          <div class="problem-grid" style="grid-template-columns:repeat(2,1fr)">
+            <article class="card"><div class="icon">▤</div><h3>Requirements overview</h3><p>Download the current sample requirement register and its statuses.</p><button class="btn btn-ghost btn-small report-export" data-report="requirements" style="margin-top:15px">Export CSV ↓</button></article>
+            <article class="card"><div class="icon">△</div><h3>Risk summary</h3><p>Export risk severity, owner, status and mitigation notes.</p><button class="btn btn-ghost btn-small report-export" data-report="risks" style="margin-top:15px">Export CSV ↓</button></article>
+            <article class="card"><div class="icon">✓</div><h3>Action tracker</h3><p>Download tasks, owners, due dates and current progress.</p><button class="btn btn-ghost btn-small report-export" data-report="actions" style="margin-top:15px">Export CSV ↓</button></article>
+            <article class="card"><div class="icon">▧</div><h3>Workspace snapshot</h3><p>Print a clean summary of the current prototype workspace.</p><button class="btn btn-primary btn-small" id="printReportBtn" style="margin-top:15px">Print report ↗</button></article>
+          </div>
+          <p class="muted" style="font-size:.78rem;margin-top:18px">Exports contain demonstration records only. CSV files are generated locally in your browser.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">A connected workflow</div><h2>From requirement to <span class="gradient-text">report-ready progress.</span></h2><p class="muted">A straightforward sequence gives teams a shared way to organize and review their work.</p></div>
+    <div class="how-grid">
+      <article class="step"><span class="step-num">01 / ORGANIZE</span><div class="icon">▤</div><h3>Organize requirements</h3><p class="muted">Create a structured list of obligations and categories.</p></article>
+      <article class="step"><span class="step-num">02 / CONNECT</span><div class="icon">⌕</div><h3>Map evidence</h3><p class="muted">Link supporting records to the requirements they address.</p></article>
+      <article class="step"><span class="step-num">03 / ASSESS</span><div class="icon">△</div><h3>Identify risks</h3><p class="muted">Capture potential gaps and their possible impact.</p></article>
+      <article class="step"><span class="step-num">04 / ASSIGN</span><div class="icon">✓</div><h3>Assign actions</h3><p class="muted">Give each next step an owner, priority and due date.</p></article>
+      <article class="step"><span class="step-num">05 / MONITOR</span><div class="icon">◷</div><h3>Monitor progress</h3><p class="muted">Review status and identify items needing attention.</p></article>
+      <article class="step"><span class="step-num">06 / REPORT</span><div class="icon">▧</div><h3>Generate reports</h3><p class="muted">Export a useful snapshot for team discussions.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="roadmap">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">Where the product can go</div><h2>Built in phases. <span class="gradient-text">Designed to grow.</span></h2><p class="muted">The roadmap separates what this browser prototype demonstrates from capabilities that would need further engineering.</p></div>
+    <div class="roadmap">
+      <article class="card phase"><div class="phase-label">Phase 1 · Core prototype <span class="demo-tag">DEMO BUILT</span></div><h3 style="margin-top:12px">A centralized foundation</h3><ul><li>Compliance workspace overview</li><li>Requirement register and filters</li><li>Risk register and evidence records</li><li>Action tracker with add-task flow</li><li>CSV export and print report</li></ul></article>
+      <article class="card phase"><div class="phase-label">Phase 2 · Intelligence & automation</div><h3 style="margin-top:12px">More proactive workflows</h3><ul><li>AI-assisted requirement insights</li><li>Smart risk prioritization</li><li>Automated reminders and notifications</li><li>Advanced reporting and trend analysis</li></ul><span class="status review">Planned</span></article>
+      <article class="card phase"><div class="phase-label">Phase 3 · Enterprise expansion</div><h3 style="margin-top:12px">A configurable platform</h3><ul><li>Configurable regulatory frameworks</li><li>Team collaboration and permissions</li><li>Enterprise integrations</li><li>Advanced analytics and audit history</li></ul><span class="status review">Planned</span></article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="responsible-ai">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">Trust by design</div><h2>Responsible AI. <span class="gradient-text">Human accountability.</span></h2><p class="muted">Compliance decisions deserve transparent limits and qualified human judgment.</p></div>
+    <div class="responsible">
+      <article class="card"><div class="icon">✧</div><h3>AI is assistive, not authoritative</h3><p>Any future AI-generated summaries or insights must be reviewed by a responsible human before they are used to make decisions.</p></article>
+      <article class="card"><div class="icon">⚖</div><h3>Professional verification matters</h3><p>Regulatory interpretations and applicability must be verified by qualified professionals against authoritative sources.</p></article>
+      <article class="card"><div class="icon">ⓘ</div><h3>Not legal advice or certification</h3><p>This prototype is not a substitute for legal advice, an audit, regulatory approval or official compliance certification.</p></article>
+      <article class="card"><div class="icon">◇</div><h3>Demonstration-only data</h3><p>All dashboard records and metrics are fictional. No QNX system integration or live regulatory data connection is represented.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="documentation">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">Project documentation</div><h2>A clear brief for <span class="gradient-text">builders and judges.</span></h2><p class="muted">Compliance Navigator AI is a proposed compliance operations workspace presented as a self-contained frontend prototype.</p></div>
+    <div class="docs-grid">
+      <article class="card"><h3>What it does</h3><p>Organizes requirements, evidence records, risks, owners and actions into a unified sample workspace.</p></article>
+      <article class="card"><h3>Problem addressed</h3><p>Fragmented information and unclear ownership make compliance work harder to coordinate and report.</p></article>
+      <article class="card"><h3>How the demo works</h3><p>Switch dashboard views, search and filter records, add risks or actions, update task statuses and export CSVs.</p></article>
+      <article class="card"><h3>Technology</h3><p>Semantic HTML5, CSS3, vanilla JavaScript, inline SVG-free CSS visualizations and browser-native APIs.</p></article>
+      <article class="card"><h3>Prototype limitations</h3><p>No backend, authentication, persistent database, real file upload, AI model, regulatory feed or external integration.</p></article>
+      <article class="card"><h3>Next development steps</h3><p>Introduce secure persistence, role-based access, validated frameworks, evidence storage and governed AI assistance.</p></article>
+    </div>
+    <div class="solution-band" style="margin-top:22px"><div class="icon">⌘</div><div><h3 style="margin-bottom:5px">Technology note</h3><p class="muted" style="margin:0">Built with HTML, CSS and vanilla JavaScript. No paid services, API keys, package installation or backend hosting are required for this demo.</p></div></div>
+  </div>
+</section>
+</main>
+
+<footer class="footer"><div class="container footer-inner"><div><strong style="color:#e2e8f0">Compliance Navigator AI</strong><br>Turn Compliance Complexity into Clear, Trackable Action.</div><div>QNX Global Hackathon · Concept prototype<br><span>Independent demonstration — no official QNX affiliation or integration implied.</span></div><div>© 2026 · Demo workspace</div></div></footer>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal"><div class="modal-head"><h3 id="modalTitle">Add action</h3><button class="close" id="modalClose" aria-label="Close dialog">×</button></div><form id="recordForm"><div class="form-grid" id="formFields"></div><div class="form-actions"><button type="button" class="btn btn-ghost btn-small" id="cancelModal">Cancel</button><button class="btn btn-primary btn-small" type="submit">Save record</button></div></form></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+  const requirements = [
+    {id:"REQ-001",title:"Documented security governance policy",category:"Governance",owner:"A. Morgan",priority:"High",status:"Mapped"},
+    {id:"REQ-002",title:"Access control review process",category:"Security",owner:"J. Patel",priority:"High",status:"In review"},
+    {id:"REQ-003",title:"Personal data handling procedure",category:"Privacy",owner:"S. Chen",priority:"High",status:"Needs evidence"},
+    {id:"REQ-004",title:"Supplier assurance assessment",category:"Supplier",owner:"M. Rivera",priority:"Medium",status:"In review"},
+    {id:"REQ-005",title:"Incident response playbook",category:"Security",owner:"J. Patel",priority:"High",status:"Mapped"},
+    {id:"REQ-006",title:"Periodic policy review schedule",category:"Governance",owner:"A. Morgan",priority:"Low",status:"Mapped"},
+    {id:"REQ-007",title:"Data retention and disposal rules",category:"Privacy",owner:"S. Chen",priority:"Medium",status:"Not started"},
+    {id:"REQ-008",title:"Third-party access inventory",category:"Supplier",owner:"M. Rivera",priority:"Medium",status:"Mapped"},
+    {id:"REQ-009",title:"Security awareness records",category:"Security",owner:"J. Patel",priority:"Low",status:"Mapped"},
+    {id:"REQ-010",title:"Change approval documentation",category:"Governance",owner:"A. Morgan",priority:"Medium",status:"In review"},
+    {id:"REQ-011",title:"Privacy request handling workflow",category:"Privacy",owner:"S. Chen",priority:"Medium",status:"Mapped"},
+    {id:"REQ-012",title:"Supplier evidence refresh cadence",category:"Supplier",owner:"M. Rivera",priority:"High",status:"Not started"}
+  ];
+  let risks = [
+    {title:"Incomplete supplier assurance evidence",category:"Third party",severity:"High",owner:"M. Rivera",status:"Open",mitigation:"Request updated assurance pack and review gaps."},
+    {title:"Access review not completed on schedule",category:"Security",severity:"High",owner:"J. Patel",status:"Mitigating",mitigation:"Confirm system owners and complete review sampling."},
+    {title:"Policy review cadence unclear",category:"Governance",severity:"Medium",owner:"A. Morgan",status:"Open",mitigation:"Define review owner and annual review checkpoint."}
+  ];
+  const evidence = [
+    {name:"Security policy v1.4",requirement:"REQ-001 · Security governance",updated:"2026-10-28",verification:"Verified"},
+    {name:"Access review worksheet",requirement:"REQ-002 · Access control",updated:"2026-11-02",verification:"Pending review"},
+    {name:"Incident response exercise notes",requirement:"REQ-005 · Incident response",updated:"2026-10-21",verification:"Verified"},
+    {name:"Supplier assurance questionnaire",requirement:"REQ-004 · Supplier assurance",updated:"2026-10-30",verification:"Pending review"},
+    {name:"Policy review calendar",requirement:"REQ-006 · Policy review",updated:"2026-09-18",verification:"Verified"}
+  ];
+  let actions = [
+    {title:"Complete access review sampling",owner:"J. Patel",due:"2026-11-21",priority:"High",status:"In progress"},
+    {title:"Request supplier evidence refresh",owner:"M. Rivera",due:"2026-11-24",priority:"High",status:"Open"},
+    {title:"Confirm privacy procedure owner",owner:"S. Chen",due:"2026-11-28",priority:"Medium",status:"Open"},
+    {title:"Schedule governance policy review",owner:"A. Morgan",due:"2026-11-30",priority:"Low",status:"Complete"},
+    {title:"Review incident response notes",owner:"J. Patel",due:"2026-12-03",priority:"Medium",status:"Complete"}
+  ];
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const badge = (s,kind="status") => `<span class="${kind} ${String(s).toLowerCase().replaceAll(" ","-")}">${escapeHTML(s)}</span>`;
+  function toast(message){const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2600);}
+  const titles={overview:["Workspace overview","A snapshot of your sample compliance workspace"],requirements:["Requirements register","Search, filter and review sample requirements"],risks:["Risk register","Monitor potential issues and mitigation ownership"],evidence:["Evidence library","Review evidence records linked to requirements"],actions:["Action tracker","Assign and update work across the team"],reports:["Reports & exports","Create a local snapshot of demonstration data"]};
+  function showTab(tab){
+    $$(".tab-content").forEach(el=>el.classList.toggle("active",el.id==="tab-"+tab));
+    $$(".side-link").forEach(el=>el.classList.toggle("active",el.dataset.tab===tab));
+    $("#viewTitle").textContent=titles[tab][0];$("#viewSubtitle").textContent=titles[tab][1];
+    if(tab==="overview") updateOverview();
+  }
+  $$(".side-link").forEach(btn=>btn.addEventListener("click",()=>showTab(btn.dataset.tab)));
+  function renderRequirements(){
+    const q=$("#reqSearch").value.toLowerCase(), status=$("#reqFilter").value, category=$("#categoryFilter").value;
+    const rows=requirements.filter(r=>(`${r.id} ${r.title} ${r.owner}`.toLowerCase().includes(q))&&(status==="all"||r.status===status)&&(category==="all"||r.category===category));
+    $("#requirementsBody").innerHTML=rows.length?rows.map(r=>`<tr><td><b>${escapeHTML(r.id)}</b><br><span class="muted">${escapeHTML(r.title)}</span></td><td>${escapeHTML(r.category)}</td><td>${escapeHTML(r.owner)}</td><td>${badge(r.priority,"priority")}</td><td>${badge(r.status)}</td></tr>`).join(""):`<tr><td colspan="5" class="empty">No matching requirements found.</td></tr>`;
+  }
+  function renderRisks(){
+    $("#risksBody").innerHTML=risks.map(r=>`<tr><td><b>${escapeHTML(r.title)}</b></td><td>${escapeHTML(r.category)}</td><td>${badge(r.severity,"priority")}</td><td>${escapeHTML(r.owner)}</td><td>${badge(r.status,r.status==="Open"?"status review":"status progress")}</td><td style="white-space:normal;min-width:210px">${escapeHTML(r.mitigation)}</td></tr>`).join("");
+  }
+  function renderEvidence(){
+    const q=$("#evidenceSearch").value.toLowerCase();
+    const rows=evidence.filter(e=>(e.name+" "+e.requirement).toLowerCase().includes(q));
+    $("#evidenceBody").innerHTML=rows.length?rows.map(e=>`<tr><td><b>${escapeHTML(e.name)}</b></td><td>${escapeHTML(e.requirement)}</td><td>${escapeHTML(e.updated)}</td><td>${badge(e.verification,e.verification==="Verified"?"status complete":"status review")}</td></tr>`).join(""):`<tr><td colspan="4" class="empty">No evidence records match your search.</td></tr>`;
+  }
+  function renderActions(){
+    const q=$("#actionSearch").value.toLowerCase(), filter=$("#actionFilter").value;
+    const rows=actions.map((a,i)=>({...a,index:i})).filter(a=>(a.title+" "+a.owner).toLowerCase().includes(q)&&(filter==="all"||a.status===filter));
+    $("#actionsBody").innerHTML=rows.length?rows.map(a=>`<tr><td><b>${escapeHTML(a.title)}</b></td><td>${escapeHTML(a.owner)}</td><td>${escapeHTML(a.due)}</td><td>${badge(a.priority,"priority")}</td><td><select class="table-select action-status" data-index="${a.index}" aria-label="Change status for ${escapeHTML(a.title)}"><option ${a.status==="Open"?"selected":""}>Open</option><option ${a.status==="In progress"?"selected":""}>In progress</option><option ${a.status==="Complete"?"selected":""}>Complete</option></select></td></tr>`).join(""):`<tr><td colspan="5" class="empty">No matching actions found.</td></tr>`;
+    $$(".action-status").forEach(sel=>sel.addEventListener("change",e=>{actions[Number(e.target.dataset.index)].status=e.target.value;renderActions();updateOverview();toast("Action status updated.");}));
+  }
+  function updateOverview(){
+    const mapped=requirements.filter(r=>r.status==="Mapped").length;
+    const review=requirements.filter(r=>["In review","Needs evidence"].includes(r.status)).length;
+    const high=risks.filter(r=>r.severity==="High"&&r.status!=="Closed").length;
+    const done=actions.filter(a=>a.status==="Complete").length;
+    const coverage=Math.round(mapped/requirements.length*100), actionPct=Math.round(done/Math.max(actions.length,1)*100);
+    $("#totalReq").textContent=requirements.length;$("#mappedReq").textContent=mapped;$("#reviewReq").textContent=review;$("#highRisks").textContent=high;
+    $("#coverageLabel").textContent=coverage+"%";$("#coverageBar").style.width=coverage+"%";$("#actionProgress").textContent=actionPct+"%";$("#actionBar").style.width=actionPct+"%";
+    $(".stat-grid .stat-card:nth-child(2) .stat-foot").textContent=coverage+"% mapped";
+  }
+  ["reqSearch","reqFilter","categoryFilter"].forEach(id=>$("#"+id).addEventListener(id==="reqSearch"?"input":"change",renderRequirements));
+  $("#evidenceSearch").addEventListener("input",renderEvidence);
+  ["actionSearch","actionFilter"].forEach(id=>$("#"+id).addEventListener(id==="actionSearch"?"input":"change",renderActions));
+
+  const backdrop=$("#modalBackdrop"), fields=$("#formFields"), form=$("#recordForm");
+  let modalType="action";
+  function openModal(type){
+    modalType=type;$("#modalTitle").textContent=type==="risk"?"Add risk":"Add action";
+    const specs=type==="risk"?[
+      ["Risk title","title","text","e.g. Incomplete vendor review"],["Category","category","text","e.g. Supplier"],["Severity","severity","select",["Low","Medium","High"]],["Owner","owner","text","e.g. A. Morgan"],["Mitigation notes","mitigation","textarea","Describe the next mitigation step"]
+    ]:[
+      ["Task title","title","text","e.g. Review policy evidence"],["Assigned owner","owner","text","e.g. J. Patel"],["Due date","due","date",""],["Priority","priority","select",["Low","Medium","High"]]
+    ];
+    fields.innerHTML=specs.map(([label,name,type,extra])=>`<label>${label}${type==="select"?`<select class="field" name="${name}" required>${extra.map(v=>`<option>${v}</option>`).join("")}</select>`:type==="textarea"?`<textarea class="field" name="${name}" rows="3" placeholder="${extra}" required></textarea>`:`<input class="field" name="${name}" type="${type}" placeholder="${extra}" ${name==="due"?"required":""} ${name==="title"||name==="owner"?"required":""}>`}</label>`).join("");
+    backdrop.classList.add("open");fields.querySelector("input,select,textarea")?.focus();
+  }
+  function closeModal(){backdrop.classList.remove("open");form.reset();}
+  $("#addActionBtn").addEventListener("click",()=>openModal("action"));
+  $("#addActionTop").addEventListener("click",()=>{showTab("actions");openModal("action");});
+  $("#addRiskBtn").addEventListener("click",()=>openModal("risk"));
+  $("#modalClose").addEventListener("click",closeModal);$("#cancelModal").addEventListener("click",closeModal);
+  backdrop.addEventListener("click",e=>{if(e.target===backdrop)closeModal();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+  form.addEventListener("submit",e=>{
+    e.preventDefault();const data=Object.fromEntries(new FormData(form).entries());
+    if(modalType==="risk"){risks.unshift({...data,status:"Open"});renderRisks();showTab("risks");toast("Risk added to the demo register.");}
+    else{actions.unshift({...data,status:"Open"});renderActions();updateOverview();showTab("actions");toast("Task added to the action tracker.");}
+    closeModal();
+  });
+
+  function csvCell(v){return `"${String(v??"").replaceAll('"','""')}"`;}
+  function exportCSV(type){
+    const data=type==="requirements"?requirements:type==="risks"?risks:actions;
+    if(!data.length){toast("There are no records to export.");return;}
+    const headers=Object.keys(data[0]);const csv=[headers.map(csvCell).join(","),...data.map(row=>headers.map(h=>csvCell(row[h])).join(","))].join("\r\n");
+    const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download=`compliance-navigator-${type}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast("CSV export downloaded.");
+  }
+  $$(".report-export").forEach(btn=>btn.addEventListener("click",()=>exportCSV(btn.dataset.report)));
+  function printReport(){showTab("overview");window.print();}
+  $("#printBtn").addEventListener("click",printReport);$("#printReportBtn").addEventListener("click",printReport);
+
+  $("#menuToggle").addEventListener("click",()=>{const nav=$("#navLinks"),open=nav.classList.toggle("open");$("#menuToggle").setAttribute("aria-expanded",String(open));});
+  $$("#navLinks a").forEach(a=>a.addEventListener("click",()=>{$("#navLinks").classList.remove("open");$("#menuToggle").setAttribute("aria-expanded","false");}));
+  renderRequirements();renderRisks();renderEvidence();renderActions();updateOverview();
+})();
+</script>
+</body>
+</html>
